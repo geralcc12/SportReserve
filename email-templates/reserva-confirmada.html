@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserva Confirmada - SportReserve</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    table {
+      border-spacing: 0;
+      width: 100%;
+    }
+    .email-container {
+      width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+    }
+    .header {
+      background-color: #3B82F6;
+      text-align: center;
+      padding: 0 25px;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+    .header img {
+      max-width: 180px;
+      height: auto;
+      margin: 35px 0 25px 0;
+    }
+    .header-title {
+      color: #fff;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 30px 0 20px 0;
+      letter-spacing: 1px;
+    }
+    .main-content {
+      background-color: #fff;
+      padding: 0 20px;
+      text-align: center;
+    }
+    .main-content h2 {
+      color: #141414;
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 33px;
+      margin-bottom: 40px;
+    }
+    .main-content img {
+      max-width: 209px;
+      height: auto;
+      margin-bottom: 19px;
+    }
+    .fecha-hora p{
+      background-color: #2a2a29;
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 600;
+      color: #ffffff;
+      text-align: center;
+      width: 110px;
+      display: inline-block;
+      margin: 10px;
+    }
+    .cta-button {
+      background-color: #2563eb;
+      color: white;
+      font-size: 18px;
+      padding: 15px 60px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+    }
+    .texto {
+      color: #141414;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 100%;
+      margin-top: 42px;
+      margin-bottom: 43px;
+      max-width: 310px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .footer {
+      background-color: #141414;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 14px;
+    }
+    .hueco{
+      width:260px !important;
+    }
+  </style>
+</head>
+<body>
+  <table class="email-container" cellspacing="0" cellpadding="0">
+    <!-- Header -->
+    <tr>
+      <td class="header" align="center">
+        <!-- Si tienes un logo, reemplaza el texto por <img src="URL_DEL_LOGO" alt="SportReserve" /> -->
+        <div class="header-title">SportReserve</div>
+      </td>
+    </tr>
+    <!-- Main Content -->
+    <tr>
+      <td class="main-content" align="center">
+        <h2>¡Reserva Confirmada!</h2>
+        <img src="{{qr}}" alt="Código QR" />
+        <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 20px;">
+          <tr>
+            <td class="hueco" align="center"></td>
+            <td class="fecha-hora" align="center">
+              <span style="font-weight: 600; color: #000000;">Fecha:</span><br><p style="color: #fff;">{{fecha}}</p>
+            </td>
+            <td class="fecha-hora" align="center">
+              <span style="font-weight: 600; color: #000000;">Hora:</span><br><p style="color: #fff;">{{hora}}</p>
+            </td>
+            <td class="hueco" align="center"></td>
+          </tr>
+        </table>
+        <a href="{{descargar_url}}" class="cta-button">DESCARGAR QR</a>
+        <p class="texto"><strong>Presenta tu código QR en la entrada de la cancha.</strong><br>¡Te esperamos para que disfrutes tu reserva deportiva!</p>
+      </td>
+    </tr>
+    <!-- Footer -->
+    <tr>
+      <td class="footer" align="center">
+        <p>Este correo fue enviado por <strong>SportReserve</strong>. ¡Gracias por confiar en nosotros!</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html> 
