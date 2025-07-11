@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
+import { useApi } from '../hooks/useApi';
+import { API_BASE_URL } from '@/config/api';
 
 interface AuthContextType {
   user: User | null;
@@ -22,6 +24,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const { request } = useApi<{ user: any; token: string }>();
 
   useEffect(() => {
     // Simular verificación de sesión
@@ -40,8 +43,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name: email.split('@')[0],
       role: email.includes('admin') ? 'admin' : 'user'
     };
-    
+    const result:any = await request(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
     setUser(mockUser);
+    localStorage.setItem('token', result?.token);
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
 
@@ -53,8 +60,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name,
       role: 'user'
     };
-    
+    const result:any = await request(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      body: JSON.stringify({ email, password, name }),
+    });
     setUser(mockUser);
+    localStorage.setItem('token', result?.token);
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
 

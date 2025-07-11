@@ -3,78 +3,31 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Cancha } from '../types';
 import { LogOut, BarChart3, Clock, MapPin } from 'lucide-react';
+import { API_BASE_URL } from '@/config/api';
+import { useApi } from '@/hooks/useApi';
 
 const CanchaList = () => {
   const { user, logout } = useAuth();
   const [canchas, setCanchas] = useState<Cancha[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Datos mock de canchas
+  const { request, loading, error } = useApi<any[]>();
   useEffect(() => {
-    // TODO BACKEND: Reemplazar este mock por una llamada real a obtenerCanchas()
-    // Ejemplo:
-    // obtenerCanchas().then(res => setCanchas(res.data));
-    const mockCanchas: Cancha[] = [
-      {
-        id: '1',
-        name: 'Cancha de Fútbol 1',
-        sport: 'Fútbol',
-        price: 50,
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
-        description: 'Cancha de fútbol 11 con césped sintético profesional',
-        isAvailable: true
-      },
-      {
-        id: '2',
-        name: 'Cancha de Fútbol 2',
-        sport: 'Fútbol',
-        price: 50,
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
-        description: 'Cancha de fútbol 11 con césped sintético profesional',
-        isAvailable: true
-      },
-      {
-        id: '3',
-        name: 'Cancha de Tenis',
-        sport: 'Tenis',
-        price: 30,
-        image: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop',
-        description: 'Cancha de tenis con superficie de arcilla',
-        isAvailable: true
-      },
-      {
-        id: '4',
-        name: 'Cancha de Básquet',
-        sport: 'Básquet',
-        price: 25,
-        image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop',
-        description: 'Cancha de básquet con canastas profesionales',
-        isAvailable: true
-      },
-      {
-        id: '5',
-        name: 'Cancha de Vóley',
-        sport: 'Vóley',
-        price: 20,
-        image: 'https://images.unsplash.com/photo-1592659762303-90081d34b277?w=400&h=300&fit=crop',
-        description: 'Cancha de vóley de playa con arena especial',
-        isAvailable: true
-      },
-      {
-        id: '6',
-        name: 'Cancha de Pádel',
-        sport: 'Pádel',
-        price: 35,
-        image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&h=300&fit=crop',
-        description: 'Cancha de pádel con paredes de cristal',
-        isAvailable: true
+    const obtenerCanchas = async () => {
+      const data = await request(`${API_BASE_URL}/fields/available`);
+      if (data) {
+        const parsed: Cancha[] = data.map((field: any) => ({
+          id: field.id.toString(),
+          name: field.name,
+          sport: field.sportType?.name || 'Desconocido',
+          price: field.price,
+          image: `http://localhost:5005/uploads/${field.sportType.name.toLowerCase()}.jpg`,
+          description: field.description,
+          isAvailable: field.is_active === 1 || field.is_active === true,
+        }));
+        setCanchas(parsed);
       }
-    ];
+    };
 
-    setTimeout(() => {
-      setCanchas(mockCanchas);
-      setLoading(false);
-    }, 1000);
+    obtenerCanchas();
   }, []);
 
   const handleLogout = () => {

@@ -6,7 +6,9 @@ export interface User {
 }
 
 export interface Cancha {
-  id: string;
+  sportType: any;
+  is_active: number;
+  id: number;
   name: string;
   sport: string;
   price: number;
