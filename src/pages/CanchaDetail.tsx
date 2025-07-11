@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, MapPin, Users } from 'lucide-react';
-import { Cancha, Horario } from '../types';
+import { ArrowLeft, Clock, Users } from 'lucide-react';
+import { /* Cancha, */ Horario } from '../types';
 import { addDays, format, isSameDay } from 'date-fns';
 import es from 'date-fns/locale/es';
 import { useApi } from '@/hooks/useApi';
 import { API_BASE_URL } from '@/config/api';
 
 const CanchaDetail = () => {
-  const { request: fetchCancha } = useApi<Cancha>();
+  const { request: fetchCancha } = useApi<any>();
   const { request: fetchHorarios } = useApi<any[]>();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [cancha, setCancha] = useState<Cancha | null>(null);
+  const [cancha, setCancha] = useState<any | null>(null);
   const [horarios, setHorarios] = useState<Horario[]>([]);
   const [selectedHorario, setSelectedHorario] = useState<Horario | null>(null);
   const [loading, setLoading] = useState(true);

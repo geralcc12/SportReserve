@@ -2,19 +2,19 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Cancha } from '../types';
-import { LogOut, BarChart3, Clock, MapPin } from 'lucide-react';
+import { LogOut, BarChart3, Clock,/*  MapPin  */} from 'lucide-react';
 import { API_BASE_URL } from '@/config/api';
 import { useApi } from '@/hooks/useApi';
 
 const CanchaList = () => {
   const { user, logout } = useAuth();
   const [canchas, setCanchas] = useState<Cancha[]>([]);
-  const { request, loading, error } = useApi<any[]>();
+  const { request, loading,/*  error */ } = useApi<any[]>();
   useEffect(() => {
     const obtenerCanchas = async () => {
       const data = await request(`${API_BASE_URL}/fields/available`);
       if (data) {
-        const parsed: Cancha[] = data.map((field: any) => ({
+        const parsed: any[] = data.map((field: any) => ({
           id: field.id.toString(),
           name: field.name,
           sport: field.sportType?.name || 'Desconocido',
