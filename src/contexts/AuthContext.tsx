@@ -70,9 +70,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('userApi', JSON.stringify(result));
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
-  const getAuth=()=>{
-    return localStorage.getItem('userApi') || null;
-  }
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
