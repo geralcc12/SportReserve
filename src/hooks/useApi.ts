@@ -4,7 +4,7 @@ import { useState } from 'react';
 export function useApi<TResponse = any>() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
+    const [response, setResponse] = useState();
     const request = async (
         url: string,
         options?: RequestInit,
@@ -26,7 +26,7 @@ export function useApi<TResponse = any>() {
             if (!response.ok) {
                 throw new Error(data.message || 'Error desconocido');
             }
-
+            setResponse(data);
             return data;
         } catch (err: any) {
             setError(err.message || 'Error en la petición');
@@ -36,5 +36,5 @@ export function useApi<TResponse = any>() {
         }
     };
 
-    return { request, loading, error };
+    return { request, loading, error, response };
 }

@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     setUser(mockUser);
     localStorage.setItem('token', result?.token);
+    localStorage.setItem('userApi', JSON.stringify(result));
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
 
@@ -66,9 +67,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     setUser(mockUser);
     localStorage.setItem('token', result?.token);
+    localStorage.setItem('userApi', JSON.stringify(result));
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
-
+  const getAuth=()=>{
+    return localStorage.getItem('userApi') || null;
+  }
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');

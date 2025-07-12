@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Users } from 'lucide-react';
 import { /* Cancha, */ Horario } from '../types';
+import { mostrarAlertaError, mostrarAlertaExito } from '../utils/alerts';
 import { addDays, format, isSameDay } from 'date-fns';
 import es from 'date-fns/locale/es';
 import { useApi } from '@/hooks/useApi';
@@ -10,10 +11,11 @@ import { API_BASE_URL } from '@/config/api';
 const CanchaDetail = () => {
   const { request: fetchCancha } = useApi<any>();
   const { request: fetchHorarios } = useApi<any[]>();
+  const { request: requestReservation, error: errorReservation, response  } = useApi<any[]>();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [cancha, setCancha] = useState<any | null>(null);
-  const [horarios, setHorarios] = useState<Horario[]>([]);
+  const [horarios, setHorarios] = useState<any[]>([]);
   const [selectedHorario, setSelectedHorario] = useState<Horario | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -48,6 +50,7 @@ const CanchaDetail = () => {
           endTime: h.end_time.substring(0, 5),
           isAvailable: h.is_available === 1 || h.is_available === true,
           price: parseFloat(canchaResponse?.price || '0'),
+          dayOfWeek: h.day_of_week
         }));
         setHorarios(mapped);
       }
@@ -58,48 +61,16 @@ const CanchaDetail = () => {
     cargarDatos();
   }, [id]);
 
-  /* useEffect(() => {
-    // TODO BACKEND: Reemplazar este mock por una llamada real a obtener los datos de la cancha y los horarios del día seleccionado
-    // Ejemplo:
-    // obtenerHorarios(canchaId, fecha).then(res => setHorarios(res.data));
-    // obtenerCancha(canchaId).then(res => setCancha(res.data));
-    const mockCancha: Cancha = {
-      id: id || '1',
-      name: 'Cancha de Fútbol 1',
-      sport: 'Fútbol',
-      price: 50,
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=400&fit=crop',
-      description: 'Cancha de fútbol 11 con césped sintético profesional. Incluye iluminación nocturna, vestuarios y estacionamiento gratuito.',
-      isAvailable: true
-    };
-
-    const mockHorarios: Horario[] = [
-      { id: '1', canchaId: id || '1', startTime: '08:00', endTime: '09:00', isAvailable: true, price: 50 },
-      { id: '2', canchaId: id || '1', startTime: '09:00', endTime: '10:00', isAvailable: true, price: 50 },
-      { id: '3', canchaId: id || '1', startTime: '10:00', endTime: '11:00', isAvailable: false, price: 50 },
-      { id: '4', canchaId: id || '1', startTime: '11:00', endTime: '12:00', isAvailable: true, price: 50 },
-      { id: '5', canchaId: id || '1', startTime: '12:00', endTime: '13:00', isAvailable: true, price: 50 },
-      { id: '6', canchaId: id || '1', startTime: '13:00', endTime: '14:00', isAvailable: false, price: 50 },
-      { id: '7', canchaId: id || '1', startTime: '14:00', endTime: '15:00', isAvailable: true, price: 50 },
-      { id: '8', canchaId: id || '1', startTime: '15:00', endTime: '16:00', isAvailable: true, price: 50 },
-      { id: '9', canchaId: id || '1', startTime: '16:00', endTime: '17:00', isAvailable: true, price: 50 },
-      { id: '10', canchaId: id || '1', startTime: '17:00', endTime: '18:00', isAvailable: false, price: 50 },
-      { id: '11', canchaId: id || '1', startTime: '18:00', endTime: '19:00', isAvailable: true, price: 50 },
-      { id: '12', canchaId: id || '1', startTime: '19:00', endTime: '20:00', isAvailable: true, price: 50 },
-    ];
-
-    setTimeout(() => {
-      setCancha(mockCancha);
-      setHorarios(mockHorarios);
-      setLoading(false);
-    }, 1000);
-  }, [id]); */
-
   // Generar los días disponibles (hoy + 6 días)
   const days = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i));
+  const diasSemanaIngles = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   // Filtrar horarios según el día seleccionado (mock: todos los días iguales)
-  const horariosDelDia = horarios;
+  // const horariosDelDia = horarios;
+  const diaSeleccionado = diasSemanaIngles[selectedDate.getDay()];
+  const horariosDelDia = horarios
+    .filter((h) => h.dayOfWeek === diaSeleccionado)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
   const handleHorarioSelect = (horario: Horario) => {
     if (horario.isAvailable) {
@@ -111,12 +82,18 @@ const CanchaDetail = () => {
     setShowModal(true);
   };
 
-  const handleConfirmarReserva = () => {
+  const handleConfirmarReserva = async() => {
     setShowModal(false);
-    // TODO BACKEND: Aquí llamar a la API para crear la reserva y enviar el correo de confirmación
-    // Ejemplo:
-    // await crearReserva({ canchaId, horarioId, fecha, hora, usuarioEmail, ... })
-    // El backend debe enviar el correo con el QR usando el template de email
+    const data:any = JSON.parse(localStorage.getItem('userApi') || '{}');
+    await requestReservation(`${API_BASE_URL}/reservation`,{
+      method:'POST',
+      body:JSON.stringify({
+        user_id:data.user?.id || 0,
+        field_id: parseInt(cancha?.id),
+        schedule_id:parseInt(selectedHorario?.id || '0'),
+        reservation_date: format(selectedDate, 'yyyy-MM-dd')
+      })
+    });
     localStorage.setItem('reservaData', JSON.stringify({
       canchaId: cancha?.id,
       horarioId: selectedHorario?.id,
@@ -126,9 +103,29 @@ const CanchaDetail = () => {
       totalPrice: selectedHorario?.price,
       date: format(selectedDate, 'yyyy-MM-dd'),
     }));
-    navigate('/payment');
+   /*  navigate('/payment'); */
   };
+  useEffect(()=>{if(errorReservation) mostrarAlertaError(errorReservation || '')},[errorReservation]);
+  useEffect(()=>{
+      if(response) mostrarAlertaExito();
+      setTimeout(() => {
+        // Generar QR code data
+        const qrData = {
+          canchaId: cancha?.id,
+          canchaName: cancha.name,
+          startTime: selectedHorario?.startTime,
+          endTime: selectedHorario?.endTime,
+          totalPrice: selectedHorario?.price,
+          reservationId: Date.now().toString(),
+          timestamp: new Date().toISOString()
+        };
 
+        localStorage.setItem('qrData', JSON.stringify(qrData));
+        localStorage.removeItem('reservaData');
+        navigate('/qr');
+      }, 2000);
+    },
+  [response]);
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
